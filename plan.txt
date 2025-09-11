@@ -1,0 +1,92 @@
+Phase 0 — Scaffold
+
+Goal: Boot Bevy window with camera + light.
+Tasks:
+
+cargo new phyllo3d
+
+Add deps: bevy = "0.14", bevy_egui (matching Bevy minor).
+
+Spawn Camera3dBundle + PointLightBundle.
+Done when: A blank 3D window opens at 60fps.
+
+Phase 1 — Seeds (CPU instancing)
+
+Goal: Draw thousands of seeds as one instanced mesh.
+Tasks:
+
+Create low-poly cone/ellipsoid Mesh.
+
+Define InstanceData { transform: Mat4, color: Vec4 }.
+
+Build transforms via phyllotaxis:
+
+theta = i * divergence, r = k * sqrt(i), x = r*cosθ, y = r*sinθ, z = 0.
+
+Upload per-instance buffer; render 5k–20k instances.
+Done when: 10k seeds visible at 60fps on a mid machine.
+
+Phase 2 — Live Controls (bevy_egui)
+
+Goal: Sliders that rebuild instances on change.
+Tasks:
+
+Resource PhylloParams { n, divergence_deg, scale_k, dirty }.
+
+egui panel with sliders for n, divergence_deg, scale_k.
+
+If dirty, recompute instance buffer.
+Done when: Dragging a slider updates the spiral in real time.
+
+Phase 3 — 3D Shape + Orientation
+
+Goal: Give the head depth and natural seed tilt.
+Tasks:
+
+Add dish_amp, dish_exp, cap_amp.
+
+z += dish_amp * (r/r_max)^dish_exp
+
+optional sphere cap: z += cap_amp * sqrt(max(0,1-(r/r_max)^2))
+
+Tangent orientation: forward-diff on (x,y) to get yaw; tilt toward tangent by factor tangent_tilt.
+Done when: The surface visibly dishes and seeds align tangentially.
+
+Phase 4 — Styling
+
+Goal: Simple color controls.
+Tasks:
+
+Gradient by radius or angle: mix(A,B, r/r_max) or mix(A,B, fract(theta/TAU)).
+
+Two color pickers in UI.
+Done when: Switching mode or colors updates all seeds instantly.
+
+Phase 5 — Animation (optional)
+
+Goal: Grow over time.
+Tasks:
+
+animate_grow: bool, dN_per_sec: f32.
+
+Each frame: if enabled, increase n, mark dirty.
+Done when: Seeds appear from center outward smoothly.
+
+Phase 6 — Export
+
+Goal: Save current view.
+Tasks:
+
+Screenshot to PNG using Bevy image capture.
+
+(Stretch) Export GLB by baking transforms (merge instances).
+Done when: Clicking “Export PNG” writes a file to disk.
+
+Phase 7 — Scale Up (optional, later)
+
+Goal: 100k+ seeds smoothly.
+Tasks:
+
+Move math to WGSL compute; write to storage buffer consumed by instancing.
+Done when: 100k seeds interactive on typical GPU.
+
