@@ -1,11 +1,11 @@
-Phase 0 — Scaffold
+Phase 0 — Scaffold - DONE
 Goal: Boot Bevy window with camera + light.
 Tasks: `cargo new phyllo3d`
 Add deps: bevy = "0.14", bevy_egui (matching Bevy minor).
 Spawn Camera3dBundle + PointLightBundle.
 Done when: A blank 3D window opens at 60fps.
 
-Phase 1 — Seeds (CPU instancing)
+Phase 1 — Seeds (CPU instancing) - DONE
 Goal: Draw thousands of seeds as one instanced mesh.
 Tasks: Create low-poly cone/ellipsoid Mesh.
 Define InstanceData { transform: Mat4, color: Vec4 }.
@@ -14,7 +14,7 @@ theta = i * divergence, r = k * sqrt(i), x = r*cosθ, y = r*sinθ, z = 0.
 Upload per-instance buffer; render 5k–20k instances.
 Done when: 10k seeds visible at 60fps on a mid machine.
 
-Phase 2 — Live Controls (bevy_egui)
+Phase 2 — Live Controls (bevy_egui) - DOING
 Goal: Sliders that rebuild instances on change.
 Tasks: Resource PhylloParams { n, divergence_deg, scale_k, dirty }.
 egui panel with sliders for n, divergence_deg, scale_k.
