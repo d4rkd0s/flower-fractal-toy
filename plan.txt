@@ -14,14 +14,14 @@ theta = i * divergence, r = k * sqrt(i), x = r*cosθ, y = r*sinθ, z = 0.
 Upload per-instance buffer; render 5k–20k instances.
 Done when: 10k seeds visible at 60fps on a mid machine.
 
-Phase 2 — Live Controls (bevy_egui) - DOING
+Phase 2 — Live Controls (bevy_egui) - DONE
 Goal: Sliders that rebuild instances on change.
 Tasks: Resource PhylloParams { n, divergence_deg, scale_k, dirty }.
 egui panel with sliders for n, divergence_deg, scale_k.
 If dirty, recompute instance buffer.
 Done when: Dragging a slider updates the spiral in real time.
 
-Phase 3 — 3D Shape + Orientation
+Phase 3 — 3D Shape + Orientation - DOING
 Goal: Give the head depth and natural seed tilt.
 Tasks: Add dish_amp, dish_exp, cap_amp.
 z += dish_amp * (r/r_max)^dish_exp
