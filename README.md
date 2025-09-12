@@ -6,4 +6,4 @@ A GUI toy written in Rust to display and let the user play with or modify flower
 
 Or download a Build from the releases
 
-![sunflower](https://github.com/user-attachments/assets/f553f49c-adfa-4476-8f31-5482e854b892)
+![sunflower-ezgif com-cut](https://github.com/user-attachments/assets/2f97ef40-e109-410f-9684-3577c12705cb)
