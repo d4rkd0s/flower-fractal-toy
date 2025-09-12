@@ -4,6 +4,8 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+# Keep default features off to avoid audio/wayland on Linux, but
+# explicitly enable the pieces we rely on for correct rendering and UI.
 bevy = { version = "0.14", default-features = false, features = [
     "bevy_asset",
     "bevy_scene",
@@ -14,7 +16,14 @@ bevy = { version = "0.14", default-features = false, features = [
     "bevy_text",
     "bevy_ui",
     "bevy_winit",
+    # image formats used internally by Bevy
     "png",
+    # display backend on Linux
     "x11",
+    # restore Bevy defaults that affect color correctness
+    "hdr",
+    "tonemapping_luts",
+    "smaa_luts",
 ] }
-bevy_egui = { version = "0.28", default-features = false, features = ["render"] }
+# Enable egui's built-in fonts so UI text renders.
+bevy_egui = { version = "0.28", default-features = false, features = ["render", "default_fonts"] }
