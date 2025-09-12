@@ -51,34 +51,36 @@ fn main() {
         .insert_resource(PhylloParams {
             layers: vec![
                 LayerParams {
-                    n: 10_000,
-                    divergence_deg: 140.019,
-                    scale_k: 0.1,
+                    // Layer 1 defaults (per new starting values)
+                    n: 7_000,
+                    divergence_deg: 142.2505,
+                    scale_k: 0.160,
                     dish_amp: 2.0,
                     dish_exp: 2.0,
                     effective_dish_exp: 2.0,
                     cap_amp: 0.0,
-                    tangent_tilt: 1.0,
+                    tangent_tilt: 0.53,
                     breathe_mode: true,
-                    breathe_amp: 2.0,   // default per request
-                    breathe_speed: 0.1, // Hz default per request
+                    breathe_amp: 2.0,
+                    breathe_speed: 0.65, // Hz
                     spin_mode: true,
-                    spin_rate_deg_per_sec: 0.01,
-                    seed_size: 2.10,
+                    spin_rate_deg_per_sec: 0.02,
+                    seed_size: 1.60,
                     dirty: true,
                 },
                 LayerParams {
+                    // Layer 2 defaults (per new starting values)
                     n: 10_000,
-                    divergence_deg: 142.726,
-                    scale_k: 0.1,
+                    divergence_deg: 143.854,
+                    scale_k: 0.140,
                     dish_amp: 2.0,
                     dish_exp: 2.0,
                     effective_dish_exp: 2.0,
                     cap_amp: 0.0,
-                    tangent_tilt: 1.0,
+                    tangent_tilt: 0.70,
                     breathe_mode: true,
                     breathe_amp: 2.0,
-                    breathe_speed: 0.25,
+                    breathe_speed: 0.80,
                     spin_mode: true,
                     spin_rate_deg_per_sec: 0.01,
                     seed_size: 2.40,
