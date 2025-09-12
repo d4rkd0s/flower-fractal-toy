@@ -4,5 +4,17 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-bevy = "0.14"
-bevy_egui = "0.28"
+bevy = { version = "0.14", default-features = false, features = [
+    "bevy_asset",
+    "bevy_scene",
+    "bevy_render",
+    "bevy_core_pipeline",
+    "bevy_pbr",
+    "bevy_sprite",
+    "bevy_text",
+    "bevy_ui",
+    "bevy_winit",
+    "png",
+    "x11",
+] }
+bevy_egui = { version = "0.28", default-features = false, features = ["render"] }
