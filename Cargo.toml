@@ -20,10 +20,16 @@ bevy = { version = "0.14", default-features = false, features = [
     "png",
     # display backend on Linux
     "x11",
-    # restore Bevy defaults that affect color correctness
-    "hdr",
-    "tonemapping_luts",
-    "smaa_luts",
 ] }
 # Enable egui's built-in fonts so UI text renders.
 bevy_egui = { version = "0.28", default-features = false, features = ["render", "default_fonts"] }
+
+[profile.dev-small]
+inherits = "dev"
+# Drop debug symbols and incremental caches to save disk space
+debug = 0
+incremental = false
+
+[profile.release]
+# Strip symbols in release to keep artifacts small
+strip = "symbols"

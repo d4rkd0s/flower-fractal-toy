@@ -97,7 +97,13 @@ fn main() {
 
 fn setup(mut commands: Commands, mut meshes: ResMut<Assets<Mesh>>) {
     // Camera
+    // Use no tonemapping and disable HDR to avoid LUT assets,
+    // which reduces dependency size while keeping colors accurate
     commands.spawn(Camera3dBundle {
+        camera: Camera {
+            hdr: false,
+            ..default()
+        },
         transform: Transform::from_xyz(0.0, 0.0, 25.0).looking_at(Vec3::ZERO, Vec3::Y),
         ..default()
     });
