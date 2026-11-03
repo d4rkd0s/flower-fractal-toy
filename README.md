@@ -26,7 +26,9 @@ up under that name in Activity Monitor), writes a launchd agent and starts it. T
 - sits just below the desktop icons and above the system desktop picture,
 - covers the main screen, with no title bar or shadow,
 - appears on every Space, ignores the mouse, and stays out of the Dock and Cmd-Tab,
-- is capped at 30 fps (`FLOWER_FPS=60 scripts/flower-paper install` to change).
+- is capped at 30 fps (`FLOWER_FPS=60 scripts/flower-paper install` to change),
+- moves at 8% of toy speed: a breath takes 15–60 s and parameter drift plays out over minutes
+  (`FLOWER_TEMPO=0.2 scripts/flower-paper install` to change; `--tempo` on the binary, slider in the toy).
 
 Other commands: `start`, `stop`, `restart`, `status`, `uninstall`, and `run` (foreground,
 Ctrl-C to quit). A solid black desktop picture keeps the edges clean; `install` prints the

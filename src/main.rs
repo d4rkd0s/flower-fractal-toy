@@ -175,6 +175,8 @@ impl LayerGeom {
 #[derive(Resource)]
 struct PhylloParams {
     layers: Vec<LayerParams>,
+    /// Global speed multiplier for breathing, spin and drift (1.0 = toy speed).
+    tempo: f32,
 }
 
 #[derive(Resource, Clone)]
@@ -205,6 +207,8 @@ struct Config {
     fps: f64,
     /// Parameters drift randomly forever (default on in wallpaper mode).
     drift: bool,
+    /// Speed multiplier for all motion (default 1.0; 0.08 in wallpaper mode).
+    tempo: f32,
 }
 
 fn parse_args() -> Config {
@@ -212,8 +216,10 @@ fn parse_args() -> Config {
         wallpaper: false,
         fps: 60.0,
         drift: false,
+        tempo: 1.0,
     };
     let mut fps_set = false;
+    let mut tempo_set = false;
     let mut drift_set = false;
     let mut args = std::env::args().skip(1);
     while let Some(a) = args.next() {
@@ -227,6 +233,12 @@ fn parse_args() -> Config {
                 cfg.drift = false;
                 drift_set = true;
             }
+            "--tempo" => {
+                if let Some(v) = args.next().and_then(|v| v.parse::<f32>().ok()) {
+                    cfg.tempo = v.clamp(0.001, 10.0);
+                    tempo_set = true;
+                }
+            }
             "--fps" => {
                 if let Some(v) = args.next().and_then(|v| v.parse::<f64>().ok()) {
                     cfg.fps = v.clamp(1.0, 240.0);
@@ -235,11 +247,12 @@ fn parse_args() -> Config {
             }
             "-h" | "--help" => {
                 println!(
-                    "flower-fractal-toy [--wallpaper] [--fps N] [--drift|--no-drift]\n\n  \
+                    "flower-fractal-toy [--wallpaper] [--fps N] [--tempo X] [--drift|--no-drift]\n\n  \
                      --wallpaper, -w   run as the desktop wallpaper (macOS: below icons, all Spaces)\n  \
                      --fps N           cap updates at N frames per second (default 60; 30 in wallpaper mode)\n  \
                      --drift           let every parameter wander randomly forever (default in wallpaper mode)\n  \
-                     --no-drift        keep parameters fixed unless changed in the UI"
+                     --no-drift        keep parameters fixed unless changed in the UI\n  \
+                     --tempo X         speed multiplier for breathing, spin and drift (default 1; 0.08 in wallpaper mode)"
                 );
                 std::process::exit(0);
             }
@@ -251,6 +264,9 @@ fn parse_args() -> Config {
     }
     if cfg.wallpaper && !drift_set {
         cfg.drift = true;
+    }
+    if cfg.wallpaper && !tempo_set {
+        cfg.tempo = 0.08;
     }
     cfg
 }
@@ -294,6 +310,7 @@ fn main() {
             unfocused_mode: UpdateMode::reactive_low_power(frame),
         })
         .insert_resource(PhylloParams {
+            tempo: cfg.tempo,
             layers: vec![
                 LayerParams {
                     // Layer 1 defaults (per new starting values)
@@ -448,7 +465,8 @@ fn drift_layer(layer: &mut LayerParams, dt: f32, rng: &mut Rng) {
 }
 
 fn animate_update(time: Res<Time>, mut params: ResMut<PhylloParams>, mut rng: ResMut<Rng>) {
-    let dt = time.delta_seconds();
+    // Everything time-based is scaled by the tempo, so a wallpaper can crawl.
+    let dt = time.delta_seconds() * params.tempo;
     for layer in params.layers.iter_mut() {
         if layer.drift {
             drift_layer(layer, dt, &mut rng);
@@ -670,6 +688,11 @@ fn ui_overlay(mut egui_ctx: EguiContexts, mut params: ResMut<PhylloParams>) {
     let ctx = egui_ctx.ctx_mut();
     egui::Window::new("Controls").show(ctx, |ui| {
         ui.label("Flower Fractal Toy");
+        ui.add(
+            egui::Slider::new(&mut params.tempo, 0.01..=2.0)
+                .logarithmic(true)
+                .text("tempo (speed of all motion)"),
+        );
 
         for (idx, layer) in params.layers.iter_mut().enumerate() {
             ui.separator();
