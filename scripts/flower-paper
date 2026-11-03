@@ -1,0 +1,124 @@
+#!/bin/bash
+# flower-paper — run flower-fractal-toy as the macOS desktop wallpaper.
+#
+#   scripts/flower-paper install   build, install a launchd agent, start it at login (and now)
+#   scripts/flower-paper uninstall stop and remove the agent
+#   scripts/flower-paper start|stop|restart|status
+#   scripts/flower-paper run       run in the foreground (Ctrl-C to quit)
+#
+# The running process is named `flower-paper` (a renamed copy of the release
+# binary in bin/), so it is identifiable in Activity Monitor and Login Items.
+# Frame rate: FLOWER_FPS (default 30).
+set -euo pipefail
+
+NAME="flower-paper"
+LABEL="com.d4rkd0s.flower-fractal-toy.wallpaper"
+REPO="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+BIN_DIR="$REPO/bin"
+BIN="$BIN_DIR/$NAME"
+PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
+LOG="$HOME/Library/Logs/$NAME.log"
+FPS="${FLOWER_FPS:-30}"
+UID_="$(id -u)"
+
+build() {
+    echo "building release binary…"
+    (cd "$REPO" && cargo build --release)
+    mkdir -p "$BIN_DIR"
+    cp "$REPO/target/release/flower-fractal-toy" "$BIN"
+    chmod +x "$BIN"
+    echo "installed $BIN"
+}
+
+write_plist() {
+    mkdir -p "$(dirname "$PLIST")"
+    cat > "$PLIST" <<EOF
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key><string>$LABEL</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>$BIN</string>
+        <string>--wallpaper</string>
+        <string>--fps</string>
+        <string>$FPS</string>
+    </array>
+    <key>RunAtLoad</key><true/>
+    <key>KeepAlive</key>
+    <dict><key>SuccessfulExit</key><false/></dict>
+    <key>ThrottleInterval</key><integer>5</integer>
+    <key>ProcessType</key><string>Interactive</string>
+    <key>StandardOutPath</key><string>$LOG</string>
+    <key>StandardErrorPath</key><string>$LOG</string>
+    <key>EnvironmentVariables</key>
+    <dict><key>RUST_LOG</key><string>warn</string></dict>
+</dict>
+</plist>
+EOF
+}
+
+is_loaded() { launchctl print "gui/$UID_/$LABEL" >/dev/null 2>&1; }
+
+start() {
+    [ -x "$BIN" ] || build
+    [ -f "$PLIST" ] || write_plist
+    if is_loaded; then
+        launchctl kickstart "gui/$UID_/$LABEL"
+    else
+        launchctl bootstrap "gui/$UID_" "$PLIST"
+    fi
+    sleep 1
+    status
+}
+
+stop() {
+    if is_loaded; then
+        launchctl bootout "gui/$UID_/$LABEL" || true
+    fi
+    pkill -x "$NAME" 2>/dev/null || true
+    echo "stopped"
+}
+
+status() {
+    if is_loaded; then
+        echo "agent: loaded ($LABEL)"
+    else
+        echo "agent: not loaded"
+    fi
+    if pgrep -x "$NAME" >/dev/null; then
+        ps -axo pid,pcpu,pmem,comm | grep -E "[ /]$NAME\$" || true
+    else
+        echo "process: not running"
+    fi
+}
+
+case "${1:-}" in
+    install)
+        build
+        write_plist
+        start
+        echo
+        echo "tip: a solid black desktop picture keeps the edges clean:"
+        echo "  osascript -e 'tell application \"System Events\" to set picture of every desktop to \"/System/Library/Desktop Pictures/Solid Colors/Black.png\"'"
+        ;;
+    uninstall)
+        stop
+        rm -f "$PLIST"
+        echo "removed $PLIST"
+        ;;
+    build)   build ;;
+    start)   start ;;
+    stop)    stop ;;
+    restart) stop; start ;;
+    status)  status ;;
+    run)
+        [ -x "$BIN" ] || build
+        exec "$BIN" --wallpaper --fps "$FPS"
+        ;;
+    *)
+        sed -n '2,12p' "$0"
+        exit 1
+        ;;
+esac

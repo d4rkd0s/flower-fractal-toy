@@ -1,6 +1,6 @@
 [package]
 name = "flower-fractal-toy"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 
 [dependencies]
@@ -16,6 +16,8 @@ bevy = { version = "0.14", default-features = false, features = [
     "bevy_text",
     "bevy_ui",
     "bevy_winit",
+    # multithreaded schedule + task pools (parallel seed placement)
+    "multi_threaded",
     # image formats used internally by Bevy
     "png",
     # display backend on Linux
@@ -23,6 +25,22 @@ bevy = { version = "0.14", default-features = false, features = [
 ] }
 # Enable egui's built-in fonts so UI text renders.
 bevy_egui = { version = "0.28", default-features = false, features = ["render", "default_fonts"] }
+# Needed to reach the native window handle for wallpaper mode.
+raw-window-handle = "0.6"
+
+[target.'cfg(target_os = "macos")'.dependencies]
+# Pinned to the versions winit 0.30 already pulls in, so no extra objc2 copies.
+objc2 = "0.5"
+objc2-foundation = { version = "0.2", features = ["NSGeometry"] }
+objc2-app-kit = { version = "0.2", features = [
+    "NSApplication",
+    "NSGraphics",
+    "NSResponder",
+    "NSRunningApplication",
+    "NSScreen",
+    "NSView",
+    "NSWindow",
+] }
 
 [profile.dev-small]
 inherits = "dev"
@@ -33,3 +51,5 @@ incremental = false
 [profile.release]
 # Strip symbols in release to keep artifacts small
 strip = "symbols"
+lto = "thin"
+codegen-units = 1
