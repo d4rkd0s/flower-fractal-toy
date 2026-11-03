@@ -8,7 +8,7 @@
 #
 # The running process is named `flower-paper` (a renamed copy of the release
 # binary in bin/), so it is identifiable in Activity Monitor and Login Items.
-# Frame rate: FLOWER_FPS (default 30). Motion speed: FLOWER_TEMPO (default 0.08 = very slow).
+# Frame rate: FLOWER_FPS (default 30). Motion speed: FLOWER_TEMPO (default 0.03 = very slow).
 set -euo pipefail
 
 NAME="flower-paper"
@@ -19,7 +19,7 @@ BIN="$BIN_DIR/$NAME"
 PLIST="$HOME/Library/LaunchAgents/$LABEL.plist"
 LOG="$HOME/Library/Logs/$NAME.log"
 FPS="${FLOWER_FPS:-30}"
-TEMPO="${FLOWER_TEMPO:-0.08}"
+TEMPO="${FLOWER_TEMPO:-0.03}"
 UID_="$(id -u)"
 
 build() {

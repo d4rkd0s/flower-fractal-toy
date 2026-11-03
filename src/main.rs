@@ -50,8 +50,10 @@ const DRIFT_RANGES: [(f32, f32); 9] = [
     (0.00, 1.00),   // tangent_tilt
     (1.00, 3.50),   // seed_size
     (0.50, 2.00),   // breathe_amp
-    (0.20, 1.20),   // breathe_speed (Hz)
-    (-0.08, 0.08),  // spin rate (deg/s)
+    (0.10, 0.60),   // breathe_speed (Hz)
+    // Divergence is multiplied by the seed index, so even a tiny spin rate
+    // whirls the outer rim: 0.002 deg/s moves seed 10,000 by 20 deg/s before tempo.
+    (-0.002, 0.002), // spin rate (deg/s)
 ];
 
 #[derive(Clone, Copy)]
@@ -207,7 +209,7 @@ struct Config {
     fps: f64,
     /// Parameters drift randomly forever (default on in wallpaper mode).
     drift: bool,
-    /// Speed multiplier for all motion (default 1.0; 0.08 in wallpaper mode).
+    /// Speed multiplier for all motion (default 1.0; 0.03 in wallpaper mode).
     tempo: f32,
 }
 
@@ -252,7 +254,7 @@ fn parse_args() -> Config {
                      --fps N           cap updates at N frames per second (default 60; 30 in wallpaper mode)\n  \
                      --drift           let every parameter wander randomly forever (default in wallpaper mode)\n  \
                      --no-drift        keep parameters fixed unless changed in the UI\n  \
-                     --tempo X         speed multiplier for breathing, spin and drift (default 1; 0.08 in wallpaper mode)"
+                     --tempo X         speed multiplier for breathing, spin and drift (default 1; 0.03 in wallpaper mode)"
                 );
                 std::process::exit(0);
             }
@@ -266,7 +268,7 @@ fn parse_args() -> Config {
         cfg.drift = true;
     }
     if cfg.wallpaper && !tempo_set {
-        cfg.tempo = 0.08;
+        cfg.tempo = 0.03;
     }
     cfg
 }
@@ -326,7 +328,7 @@ fn main() {
                     breathe_amp: 2.0,
                     breathe_speed: 0.65, // Hz
                     spin_mode: true,
-                    spin_rate_deg_per_sec: 0.02,
+                    spin_rate_deg_per_sec: 0.002,
                     seed_size: 1.60,
                     breathe_phase: 0.0,
                     drift: cfg.drift,
@@ -347,7 +349,7 @@ fn main() {
                     breathe_amp: 2.0,
                     breathe_speed: 0.80,
                     spin_mode: true,
-                    spin_rate_deg_per_sec: 0.01,
+                    spin_rate_deg_per_sec: 0.001,
                     seed_size: 2.40,
                     breathe_phase: 0.0,
                     drift: cfg.drift,
