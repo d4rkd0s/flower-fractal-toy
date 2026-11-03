@@ -1,8 +1,7 @@
 # flower-fractal-toy
 
 A GUI toy written in Rust (Bevy) to display and play with phyllotaxis "flower fractals":
-two breathing, slowly spinning layers of 5,000 colour-cycled seeds, each one a Tibetan
-mantra syllable.
+two breathing, slowly spinning layers of 17,000 colour-cycled seeds.
 
 ![sunflower-ezgif com-cut](https://github.com/user-attachments/assets/2f97ef40-e109-410f-9684-3577c12705cb)
 
@@ -38,24 +37,6 @@ one-liner that sets it.
 
 The binary itself accepts `--wallpaper` (`-w`) and `--fps N`; on Linux and Windows
 `--wallpaper` only gives a borderless always-on-bottom window.
-
-## Mantra glyphs (v0.3)
-
-Every seed is a Tibetan (Uchen) syllable, cycling through, in seed order:
-om mani padme hum, om vajrasattva hum, om ah hum, namo amitabha, namo buddhaya,
-namo dharmaya, namo sanghaya. Each character's top points at the centre of the flower,
-and its size follows the seed spacing so neighbours never overlap.
-
-The glyphs live in `assets/tibetan_atlas.png`, compiled into the binary. Regenerate it
-(after editing the syllable list, size or weight) with the macOS system font Kailasa:
-
-```
-swift scripts/gen-atlas.swift                      # writes assets/tibetan_atlas.png
-swift scripts/gen-atlas.swift /tmp/preview.png --opaque   # black background, for eyeballing
-```
-
-`--screenshot FILE` saves the frame rendered three seconds after launch and exits, which
-is how to check the look without a visible window.
 
 ## Performance notes (v0.2)
 
