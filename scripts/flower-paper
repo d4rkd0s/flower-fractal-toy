@@ -101,7 +101,7 @@ case "${1:-}" in
         start
         echo
         echo "tip: a solid black desktop picture keeps the edges clean:"
-        echo "  osascript -e 'tell application \"System Events\" to set picture of every desktop to \"/System/Library/Desktop Pictures/Solid Colors/Black.png\"'"
+        echo "  osascript -e 'tell application \"Finder\" to set desktop picture to POSIX file \"/System/Library/Desktop Pictures/Solid Colors/Black.png\"'"
         ;;
     uninstall)
         stop
